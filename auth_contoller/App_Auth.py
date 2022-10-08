@@ -1,3 +1,4 @@
+from typing import List
 import librarian as librarian
 from lib.books.Borrowing_Order import Borrowing_Order
 from lib.books.Book import Book
@@ -19,11 +20,12 @@ class App_Auth:
         Client(id=3, full_name="rana", age=19, id_no=443,phone_number="05932188",username="rana" , password="879" ),
         Client(id=4, full_name="sona", age=20, id_no=223,phone_number="05982356",username="sona-" , password="897")]
 
-    Book_list:list[Book] = [Book(id=1 , title="Harry Potter" , description="majic film" ,author="J. K. Rowling" ,active=True)]
+    Book_list:list[Book] = [Book(id=1 , title="Harry Potter" , description="majic film" ,author="J. K. Rowling" ,active=True),
+                            Book(id=2 , title="Little Women" , description="fantactice film" ,author="Louisa May Alcott" ,active=True)]
 
 
-    Borrowed_orders_list: list[Borrowing_Order] = [Borrowing_Order(id=1,date= "5/10/2022" ,client_id= 2 ,book_id = 1, Active=True),
-                                                   Borrowing_Order(id=2, date="7/9/2022", client_id=3, book_id=1,Active=False)]
+    Borrowed_orders_list: list[Borrowing_Order] = [Borrowing_Order(id=1,date= "5/10/2022" ,client_id= 2 ,book_id = 1,book_title="Harry Potter", Active=1),
+                                                   Borrowing_Order(id=2, date="7/9/2022", client_id=3, book_id=2,book_title="Little Women",Active=1)]
 
 
     def get_last_id(self)->int:
@@ -46,7 +48,7 @@ class App_Auth:
        else:
             print("User already Used!")
 
-    def register_new_user(self, user: Client):
+    def register_new_user_client(self, user: Client):
         if not self.check_if_user_exsiest(username=user.get_username()):
             self.Client_list.append(user)
 
@@ -59,6 +61,11 @@ class App_Auth:
             if item.get_username() == username :
                 return True
         return False
+    def check_if_book_exsiest(self,title:str):
+        for item in self.Book_list:
+            if item.get_title() == title :
+                return True
+        return False
 
     def register_new_book(self, book: Book):
         if not self.check_if_book_exsiest(title=book.get_title()):
@@ -68,30 +75,18 @@ class App_Auth:
             print("Book is already append!")
             print(len(self.Book_list))
 
+    def show_avalible_book(self)->List[str]:
+        active_titles:List[str] = []
+        for item in self.Borrowed_orders_list:
+           if item.get_status() == Constatnts.Active:
+              active_titles.append(item.get_title())
+              return active_titles
 
-    def check_if_book_exsiest(self,title:str):
-        for item in self.Book_list:
-            if item.get_title() == title :
-                print( item.get_title() , " ", item.get_id())
-                return item.get_id()
-        return -1
+    def register_new_borrowing_order(self, borrowing_order: Borrowing_Order):
+      self.Borrowed_orders_list.append(borrowing_order)
 
-
-
-
-    def check_borrowing_Order_book_status(self,id:int):
-
+    def check_if_brrowwing_id_exsiest(self, id:int):
         for item in self.Borrowed_orders_list:
             if item.get_id() == id:
-             return item.get_status() == Constatnts.Active
+                return True
         return False
-
-
-
-    def register_new_borrowing_Order(self, borrowing_Order: Borrowing_Order):
-        if not self.check_if_book_exsiest(id=borrowing_Order.get_id()):
-            self.Borrowed_orders_list.append(borrowing_Order)
-
-        else:
-            print("Borrowing_Order is already append!")
-            print(len(self.Borrowed_orders_list))
